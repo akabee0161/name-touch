@@ -1,3 +1,5 @@
+import { createHelp } from './help';
+
 // タイトル画面。知育ゲームで共通。ゲームごとの決まりを入れない。
 // 字が読めない子ども向けなので、ボタンは絵（▶）だけ。字は親のための題とクレジットだけ。
 
@@ -48,6 +50,6 @@ export function showTitle(root: HTMLElement, opts: TitleOptions): void {
     opts.onStart();
   });
 
-  screen.append(heading, start, credits);
+  screen.append(heading, start, credits, createHelp());
   root.append(screen);
 }

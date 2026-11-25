@@ -169,6 +169,20 @@ describe('startNameTouch', () => {
     expect(ids()).toEqual(['apple', 'banana', 'strawberry', 'bread', 'spaghetti']);
   });
 
+  it('has the ? button for parents on the play screen, and it stays through page changes', () => {
+    const help = root.querySelector('.help');
+    expect(help).not.toBeNull();
+    fire(right(), 'click');
+    expect(root.querySelector('.help')).toBe(help);
+    expect(audio.play).not.toHaveBeenCalled();
+  });
+
+  it('tapping ? does not play a voice', () => {
+    fire(root.querySelector('.help-button'), 'pointerdown');
+    root.querySelector<HTMLElement>('.help-button')?.click();
+    expect(audio.play).not.toHaveBeenCalled();
+  });
+
   it('long press exits', () => {
     const exit = root.querySelector('.exit-button');
     fire(exit, 'pointerdown');
