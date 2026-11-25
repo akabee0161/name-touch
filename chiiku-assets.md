@@ -4,7 +4,7 @@
 手で直さない。直すときは ankardo の素材を直し、コピーし直す（コピーのたびに `public/chiiku/` は丸ごと置き換わる）。
 
 - コピー元: ankardo の `shared-assets/chiiku/`
-- commit: 5dc51d35faaa6ef1cf209fe879f51b60c531b677
+- commit: 27ec7a3eaad4bc21a190ee98bdcb79b29b4fca3d
 - コピーした日: 2026-11-25
 - 鳴き声（`cry/`）: 入れていない（--no-cry）
 
