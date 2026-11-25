@@ -1,0 +1,136 @@
+/* なまえタッチの遊びの見た目。横向きのスマホ・タブレット・PC が主。共通の見た目は src/common/common.css */
+
+.play-screen {
+  position: relative;
+  height: 100%;
+  display: grid;
+  /* 矢印が無いページでも、絵の位置が動かないように、左右の列は空けておく */
+  grid-template-columns: minmax(72px, auto) 1fr minmax(72px, auto);
+  align-items: center;
+  column-gap: clamp(6px, 2vmin, 20px);
+  padding-block: max(12px, env(safe-area-inset-top, 0px))
+    max(12px, env(safe-area-inset-bottom, 0px));
+  padding-left: max(12px, env(safe-area-inset-left, 0px));
+  padding-right: max(12px, env(safe-area-inset-right, 0px));
+}
+
+/* 絵は --cols 列・--rows 段に並べ、最後の段が足りないときは中央に寄せる（5 個なら 3 + 2） */
+.items {
+  --gap: clamp(10px, 3vmin, 28px);
+  --pad: clamp(6px, 1.5vmin, 14px);
+  grid-column: 2;
+  align-self: stretch;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: center;
+  gap: var(--gap);
+  min-height: 0;
+}
+
+.item {
+  flex: 0 0 calc((100% - (var(--cols, 3) - 1) * var(--gap)) / var(--cols, 3));
+  height: calc((100% - (var(--rows, 2) - 1) * var(--gap)) / var(--rows, 2));
+  min-width: 0;
+  min-height: 120px;
+  position: relative;
+  padding: 0;
+  border: 0;
+  border-radius: clamp(16px, 4vmin, 32px);
+  background: #ffffff;
+  box-shadow: 0 5px 0 rgb(0 0 0 / 0.12);
+  cursor: pointer;
+}
+
+.item:focus-visible,
+.arrow:focus-visible,
+.exit-button:focus-visible {
+  outline: 4px solid var(--focus);
+  outline-offset: 4px;
+}
+
+/* 絵はカードの余白の内側に、絶対配置で収める（高さの % が効かず、下にはみ出したため） */
+.item img {
+  position: absolute;
+  inset: var(--pad);
+  width: calc(100% - 2 * var(--pad));
+  height: calc(100% - 2 * var(--pad));
+  object-fit: contain;
+  /* 絵ではなくボタンが触れられるように。長押しで画像のメニューが出ないように */
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+.item.bounce img {
+  animation: bounce 0.4s ease-out;
+}
+
+@keyframes bounce {
+  0% {
+    transform: scale(1) translateY(0);
+  }
+  30% {
+    transform: scale(1.18) translateY(-6%);
+  }
+  60% {
+    transform: scale(0.95) translateY(0);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+  }
+}
+
+.arrow {
+  align-self: center;
+  width: clamp(64px, 12vmin, 96px);
+  height: clamp(96px, 20vmin, 160px);
+  border: 0;
+  border-radius: 24px;
+  background: var(--accent);
+  color: var(--accent-fg);
+  font-size: clamp(2rem, 8vmin, 3.5rem);
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 4px 0 rgb(0 0 0 / 0.18);
+}
+
+.arrow-left {
+  grid-column: 1;
+  justify-self: start;
+}
+
+.arrow-right {
+  grid-column: 3;
+  justify-self: end;
+}
+
+.arrow:active {
+  transform: translateY(2px);
+}
+
+/* ゲームを終えるボタン。長押しで押す。左上に、絵の邪魔にならない小ささで置く */
+.exit-button {
+  position: absolute;
+  top: max(8px, env(safe-area-inset-top, 0px));
+  left: max(8px, env(safe-area-inset-left, 0px));
+  z-index: 1;
+  width: 56px;
+  height: 56px;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(59 47 30 / 0.12);
+  color: var(--muted);
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item.bounce img {
+    animation: none;
+    opacity: 0.7;
+  }
+  .arrow:active {
+    transform: none;
+  }
+}
