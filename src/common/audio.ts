@@ -92,6 +92,14 @@ export function createAudio(deps: AudioDeps = {}): AudioPlayer {
   return {
     unlock() {
       // await の前に全部呼ぶ。await の後ろだと、タッチの処理の外になり、iOS が音を許さないことがある
+      // iOS Safari の Web Audio は、既定では消音スイッチで消える。声がすべてのゲームなので、
+      // 「再生」として扱わせ、消音でも鳴らす（Safari 16.4 以降。無いブラウザ・設定できない場合は何もしない）
+      try {
+        const session = (navigator as unknown as { audioSession?: { type: string } }).audioSession;
+        if (session) session.type = 'playback';
+      } catch {
+        // 設定できなくても、音は解禁する
+      }
       const c = ctx();
       const resumed = c.resume();
       const silent = c.createBufferSource();
