@@ -105,7 +105,8 @@ export function createAudio(deps: AudioDeps = {}): AudioPlayer {
       const mine = ++ticket;
       stopPlaying();
       const c = ctx();
-      if (c.state === 'suspended') {
+      // suspended（最初のタッチの前）と、iOS が電話・画面ロックで止めた interrupted は、タップで動かし直す
+      if (c.state !== 'running') {
         void c.resume().catch(() => {});
       }
       const buffer = await load(url);

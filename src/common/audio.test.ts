@@ -134,3 +134,26 @@ describe('stop', () => {
     expect(() => audio.stop()).not.toThrow();
   });
 });
+
+describe('resume on tap', () => {
+  it('resumes a context that iOS has interrupted (phone call, screen lock)', async () => {
+    const { audio, context } = makeAudio();
+    context.state = 'interrupted';
+    await audio.play('a.wav');
+    expect(context.resume).toHaveBeenCalledTimes(1);
+  });
+
+  it('resumes a suspended context', async () => {
+    const { audio, context } = makeAudio();
+    context.state = 'suspended';
+    await audio.play('a.wav');
+    expect(context.resume).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not call resume while the context is running', async () => {
+    const { audio, context } = makeAudio();
+    context.state = 'running';
+    await audio.play('a.wav');
+    expect(context.resume).not.toHaveBeenCalled();
+  });
+});

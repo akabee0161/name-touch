@@ -6,7 +6,7 @@ name-touch で作業する際の指針。
 
 - 機能ブランチから `develop` への PR を最初に作る。`develop` にマージすると、Cloudflare Access の受付の後ろに確認用のプレビューが固定の URL に自動で上がる（`.github/workflows/preview.yml`）
 - 本番に出すときは、`develop` から `main` への PR をマージする（`deploy.yml` が本番に出す）
-- `preview.yml` は `develop` への push だけで動き、`wrangler deploy` は書かない。`wrangler.toml` の `preview_urls = true` は確認用プレビューのためで、本番の `workers.dev` は開かない
+- `preview.yml` は `develop` への push と、`develop` を選んだ手動実行（`workflow_dispatch`。ankardo のひな形どおりで、`site/lib/preview-template.test.ts` が固定している）だけで動き、`wrangler deploy` は書かない。`wrangler.toml` の `preview_urls = true` は確認用プレビューのためで、本番の `workers.dev` は開かない
 - `develop` ができるまでの最初の PR（なまえタッチの公開そのもの）だけは `main` に向ける
 
 ## 共通部分（src/common/）とゲームの部分
