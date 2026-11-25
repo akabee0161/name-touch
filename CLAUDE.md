@@ -8,6 +8,8 @@ name-touch で作業する際の指針。
 - 本番に出すときは、`develop` から `main` への PR をマージする（`deploy.yml` が本番に出す）
 - `preview.yml` は `develop` への push と、`develop` を選んだ手動実行（`workflow_dispatch`。ankardo のひな形どおりで、`site/lib/preview-template.test.ts` が固定している）だけで動き、`wrangler deploy` は書かない。`wrangler.toml` の `preview_urls = true` は確認用プレビューのためで、本番の `workers.dev` は開かない
 - `develop` ができるまでの最初の PR（なまえタッチの公開そのもの）だけは `main` に向ける
+- `production` environment に保護ルール（必須レビュアー）は設けていない（依頼者の判断、2026-11-25）。`main` へのマージが、承認の待ちなしに、そのまま本番に出る。マージする前に、プレビューで確かめる
+- `package-lock.json` は、CI と同じ npm（Node 22 の npm 10）で、`node_modules` の無い場所で作る。手元の npm が違うと、`npm ci` が止まって本番デプロイが失敗する（2 回起きた）。詳しくは ankardo の `.claude/skills/new-game/SKILL.md`
 
 ## 共通部分（src/common/）とゲームの部分
 

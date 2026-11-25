@@ -87,6 +87,8 @@ export function startNameTouch(root: HTMLElement, deps: NameTouchDeps): void {
     const count = page?.items.length ?? 0;
     grid.style.setProperty('--cols', String(COLUMNS[count] ?? 3));
     grid.style.setProperty('--rows', String(Math.ceil(count / (COLUMNS[count] ?? 3)) || 1));
+    // この画面の声を先に読み込む（最初に触ったときに、待たせないため）
+    audio.preload((page?.items ?? []).map((item) => assetUrl(`voice/${item.id}.wav`)));
 
     for (const item of page?.items ?? []) {
       const button = document.createElement('button');
@@ -100,7 +102,11 @@ export function startNameTouch(root: HTMLElement, deps: NameTouchDeps): void {
       img.draggable = false;
       button.append(img);
       // 子どもは指をすべらせて触ることが多い。click は指が動くと起きないので、触れた瞬間に鳴らす
-      button.addEventListener('pointerdown', () => tap(item.id, button));
+      button.addEventListener('pointerdown', (e) => {
+        // PC の右クリック・中クリックでは鳴らさない（タッチ・ペン・左クリックは button 0）
+        if (e.button > 0) return;
+        tap(item.id, button);
+      });
       // キーボード（PC）: Enter・スペース。押しっぱなしの繰り返しでは鳴らさない
       button.addEventListener('keydown', (e) => {
         if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) {

@@ -10,6 +10,7 @@ function fakeAudio() {
   const audio = {
     unlock: vi.fn(async () => {}),
     play: vi.fn(async (_url: string) => {}),
+    preload: vi.fn((_urls: string[]) => {}),
     stop: vi.fn(),
   };
   return audio satisfies AudioPlayer;
@@ -110,6 +111,30 @@ describe('startNameTouch', () => {
     expect(logged).toHaveBeenCalledTimes(1); // 握りつぶさず、ログには残す
     expect(() => fire(item('cat'), 'pointerdown')).not.toThrow();
     logged.mockRestore();
+  });
+
+  it('a right or middle mouse click does not play a voice', () => {
+    for (const button of [1, 2]) {
+      item('dog')?.dispatchEvent(
+        Object.assign(new Event('pointerdown', { bubbles: true }), { button }),
+      );
+    }
+    expect(audio.play).not.toHaveBeenCalled();
+    // 左クリック・タッチ・ペン（button 0）は鳴る
+    item('dog')?.dispatchEvent(
+      Object.assign(new Event('pointerdown', { bubbles: true }), { button: 0 }),
+    );
+    expect(audio.play).toHaveBeenCalledTimes(1);
+  });
+
+  it('preloads the voices of the page that is shown, and of the next page when it turns', () => {
+    expect(audio.preload).toHaveBeenCalledTimes(1);
+    expect(audio.preload.mock.calls[0]?.[0]).toHaveLength(6);
+    expect(audio.preload.mock.calls[0]?.[0]?.[0]).toMatch(/chiiku\/voice\/dog\.wav$/);
+    right()?.click();
+    expect(audio.preload).toHaveBeenCalledTimes(2);
+    expect(audio.preload.mock.calls[1]?.[0]).toHaveLength(3); // むし 3
+    expect(audio.preload.mock.calls[1]?.[0]?.[0]).toMatch(/chiiku\/voice\/butterfly\.wav$/);
   });
 
   it('Enter on an item (keyboard on a PC) plays its voice once', () => {

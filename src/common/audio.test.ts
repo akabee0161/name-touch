@@ -157,3 +157,75 @@ describe('resume on tap', () => {
     expect(context.resume).not.toHaveBeenCalled();
   });
 });
+
+describe('audio session (iOS silent switch)', () => {
+  const nav = navigator as unknown as { audioSession?: { type: string } };
+
+  afterEach(() => {
+    delete nav.audioSession;
+  });
+
+  it('sets the session to playback inside unlock, so the silent switch does not mute the voice', () => {
+    nav.audioSession = { type: 'auto' };
+    const { audio } = makeAudio();
+    void audio.unlock();
+    // await の前（タッチの処理の中）で済んでいる
+    expect(nav.audioSession.type).toBe('playback');
+  });
+
+  it('does nothing on a browser that has no audioSession', async () => {
+    const { audio, context } = makeAudio();
+    await expect(audio.unlock()).resolves.toBeUndefined();
+    expect(context.resume).toHaveBeenCalledTimes(1);
+  });
+
+  it('still unlocks when setting the session throws', async () => {
+    Object.defineProperty(navigator, 'audioSession', {
+      configurable: true,
+      value: {
+        set type(_v: string) {
+          throw new Error('not allowed');
+        },
+      },
+    });
+    const { audio, context } = makeAudio();
+    await expect(audio.unlock()).resolves.toBeUndefined();
+    expect(context.resume).toHaveBeenCalledTimes(1);
+    expect(context.sources[0]?.start).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('preload', () => {
+  it('downloads and decodes the voices ahead, so the first tap does not wait', async () => {
+    const { audio, context, fetchFn } = makeAudio();
+    audio.preload(['a.wav', 'b.wav']);
+    await vi.waitFor(() => expect(context.decodeAudioData).toHaveBeenCalledTimes(2));
+    expect(fetchFn).toHaveBeenCalledTimes(2);
+    await audio.play('a.wav');
+    expect(fetchFn).toHaveBeenCalledTimes(2); // 先に読んだものを使い、もう一度は読まない
+    expect(context.sources.at(-1)?.start).toHaveBeenCalledTimes(1);
+  });
+
+  it('a voice that fails to preload does not throw, and can be tried again on the tap', async () => {
+    const context = new FakeContext();
+    let fail = true;
+    const fetchFn = vi.fn(async () => {
+      if (fail) throw new Error('offline');
+      return { ok: true, status: 200, arrayBuffer: async () => new ArrayBuffer(1) };
+    });
+    const audio = createAudio({ context: context as never, fetchFn: fetchFn as never });
+    expect(() => audio.preload(['a.wav'])).not.toThrow();
+    await vi.waitFor(() => expect(fetchFn).toHaveBeenCalledTimes(1));
+    await new Promise((r) => setTimeout(r, 0)); // 失敗が落ち着いてから（人がタップするまでには、必ず過ぎる時間）
+    fail = false;
+    await audio.play('a.wav'); // 失敗は覚えていないので、タップでもう一度読む
+    expect(context.sources.at(-1)?.start).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not play anything', async () => {
+    const { audio, context } = makeAudio();
+    audio.preload(['a.wav']);
+    await vi.waitFor(() => expect(context.decodeAudioData).toHaveBeenCalled());
+    expect(context.sources.filter((s) => s.started)).toHaveLength(0);
+  });
+});
