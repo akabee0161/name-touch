@@ -8,6 +8,8 @@ export interface AudioPlayer {
   unlock(): Promise<void>;
   /** 鳴っている音を止めてから鳴らす。読み込みが遅くても、後から叩いた方を優先する */
   play(url: string): Promise<void>;
+  /** 声を先に読み込んで、デコードしておく（鳴らさない）。最初のタッチで待たせないために、画面に出す前後に呼ぶ。失敗は握りつぶし、タップのときにやり直す */
+  preload(urls: string[]): void;
   /** 鳴っている音と、読み込み中で鳴らしていない音を止める */
   stop(): void;
 }
@@ -127,6 +129,14 @@ export function createAudio(deps: AudioDeps = {}): AudioPlayer {
       };
       playing = source;
       source.start(0);
+    },
+
+    preload(urls) {
+      for (const url of urls) {
+        load(url).catch(() => {
+          // 先読みの失敗は、タップのときにもう一度読むので、ここでは何もしない（load が失敗を覚えない）
+        });
+      }
     },
 
     stop() {
