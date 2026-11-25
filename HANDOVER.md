@@ -14,5 +14,5 @@
 ## 今の状態
 
 - 遊び（`src/game/`: 種類ごとの 5 ページ・触って声とはねる・矢印・⏏ の長押しで戻る）まで動く。依頼者が横向きのスマホ・タブレット・PC の画面を承認済み（声の聞こえ方と実機の触り心地は、公開後のプレビューで確かめる）
-- 計画は ankardo の `docs/superpowers/plans/2026-11-24-chiiku-games-step1-2.md`（ログ。現状と食い違うときは README と CLAUDE.md が正）。計画の「20 種類」は 21 種類（たべもの 5）、種類キー `fish` は `sea`（うみのいきもの）に読み替える
+- 計画は ankardo の `docs/superpowers/plans/2026-11-24-chiiku-games-step1-2.md`（ログ。現状と食い違うときは README と CLAUDE.md が正）。計画の「20 種類」は 21 種類（たべもの 5）、種類キー `fish` は `sea`（みずのいきもの）に読み替える
 - 素材は ankardo の `shared-assets/chiiku/` のコピー（`chiiku-assets.md`）。名前の声は VOICEVOX:ずんだもん
