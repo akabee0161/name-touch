@@ -8,6 +8,8 @@ export interface AudioPlayer {
   unlock(): Promise<void>;
   /** 鳴っている音を止めてから鳴らす。読み込みが遅くても、後から叩いた方を優先する */
   play(url: string): Promise<void>;
+  /** 声を先に読み込んで、デコードしておく（鳴らさない）。最初のタッチで待たせないために、画面に出す前後に呼ぶ。失敗は握りつぶし、タップのときにやり直す */
+  preload(urls: string[]): void;
   /** 鳴っている音と、読み込み中で鳴らしていない音を止める */
   stop(): void;
 }
@@ -92,6 +94,8 @@ export function createAudio(deps: AudioDeps = {}): AudioPlayer {
   return {
     unlock() {
       // await の前に全部呼ぶ。await の後ろだと、タッチの処理の外になり、iOS が音を許さないことがある
+      // iOS Safari の Web Audio は、消音スイッチで消える。これは利用者の意思なので、変えない
+      // （鳴らないときは、「？」の保護者向けの案内で消音ボタンを確かめてもらう）
       const c = ctx();
       const resumed = c.resume();
       const silent = c.createBufferSource();
@@ -119,6 +123,14 @@ export function createAudio(deps: AudioDeps = {}): AudioPlayer {
       };
       playing = source;
       source.start(0);
+    },
+
+    preload(urls) {
+      for (const url of urls) {
+        load(url).catch(() => {
+          // 先読みの失敗は、タップのときにもう一度読むので、ここでは何もしない（load が失敗を覚えない）
+        });
+      }
     },
 
     stop() {

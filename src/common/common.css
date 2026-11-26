@@ -37,6 +37,7 @@ body {
 }
 
 .title-screen {
+  position: relative;
   height: 100%;
   display: grid;
   grid-template-rows: auto 1fr auto;
@@ -95,4 +96,74 @@ body {
   .start-button:active {
     transform: none;
   }
+}
+
+/* 画面の並び（grid）の 1 マスを取らないように外す。中の ？ と説明は、それぞれ自分で位置を決める */
+.help {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+/* 保護者向けの「？」。右上に小さく置き、押すと説明が出る */
+.help-button {
+  position: absolute;
+  top: max(8px, env(safe-area-inset-top, 0px));
+  right: max(8px, env(safe-area-inset-right, 0px));
+  z-index: 1;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(59 47 30 / 0.1);
+  color: var(--muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.help-button:focus-visible,
+.help-close:focus-visible {
+  outline: 4px solid var(--focus);
+  outline-offset: 4px;
+}
+
+.help-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgb(59 47 30 / 0.55);
+}
+
+.help-dialog[hidden] {
+  display: none;
+}
+
+.help-panel {
+  max-width: 28rem;
+  padding: 20px 24px;
+  border-radius: 16px;
+  background: #ffffff;
+  color: var(--fg);
+  line-height: 1.6;
+}
+
+.help-panel p {
+  margin: 0 0 0.6em;
+}
+
+.help-close {
+  display: block;
+  margin: 12px auto 0;
+  min-width: 8rem;
+  padding: 12px 20px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--accent);
+  color: var(--accent-fg);
+  font-size: 1rem;
+  cursor: pointer;
 }

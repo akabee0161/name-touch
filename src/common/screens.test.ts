@@ -14,7 +14,7 @@ describe('showTitle', () => {
       credits: ['VOICEVOX:ずんだもん'],
       onStart: () => {},
     });
-    const buttons = root.querySelectorAll('button');
+    const buttons = root.querySelectorAll('.start-button');
     expect(buttons).toHaveLength(1);
     expect(buttons[0]?.textContent?.trim()).toBe('▶');
     expect(buttons[0]?.getAttribute('aria-label')).toBe('はじめる');
@@ -61,5 +61,13 @@ describe('showTitle', () => {
   it('shows no credit line when there are no credits', () => {
     showTitle(root, { title: 't', credits: [], onStart: () => {} });
     expect(root.querySelector('.credits')?.children.length ?? 0).toBe(0);
+  });
+
+  it('has the ? button for parents, and tapping it does not start the game', () => {
+    const onStart = vi.fn();
+    showTitle(root, { title: 't', credits: [], onStart });
+    root.querySelector<HTMLElement>('.help-button')?.click();
+    expect(root.querySelector<HTMLElement>('.help-dialog')?.hidden).toBe(false);
+    expect(onStart).not.toHaveBeenCalled();
   });
 });
