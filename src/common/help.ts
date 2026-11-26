@@ -42,6 +42,11 @@ export function createHelp(): HTMLElement {
 
   const onKey = (e: KeyboardEvent) => {
     if (e.key === 'Escape') close();
+    // 説明の中で動けるのは「とじる」だけ。Tab・Shift+Tab で、後ろ（ブラウザの画面の外）へ出さない
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      closeButton.focus();
+    }
   };
   // 説明を開いている間、後ろの画面は Tab で動けず、Enter も効かないようにする（後ろの絵の声が鳴らないように）
   let behind: Element[] = [];
@@ -49,6 +54,7 @@ export function createHelp(): HTMLElement {
     dialog.hidden = true;
     for (const el of behind) el.removeAttribute('inert');
     behind = [];
+    open.removeAttribute('inert');
     document.removeEventListener('keydown', onKey);
     open.focus();
   }
@@ -56,6 +62,7 @@ export function createHelp(): HTMLElement {
     dialog.hidden = false;
     behind = [...(wrap.parentElement?.children ?? [])].filter((el) => el !== wrap);
     for (const el of behind) el.setAttribute('inert', '');
+    open.setAttribute('inert', ''); // 「？」は説明と同じ入れ物の中にあるので、自分で外す
     document.addEventListener('keydown', onKey);
     closeButton.focus();
   });

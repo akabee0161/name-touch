@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { createHelp } from './help';
 
 describe('createHelp', () => {
@@ -11,6 +11,11 @@ describe('createHelp', () => {
     document.body.replaceChildren();
     help = createHelp();
     document.body.append(help);
+  });
+
+  afterEach(() => {
+    // 開いたままのテストが、document のキー入力の待ち受けを残さないように
+    if (dialog()?.hidden === false) close()?.click();
   });
 
   it('shows only a small ? button at first, and the notice is hidden', () => {
@@ -63,5 +68,28 @@ describe('createHelp', () => {
 
   it('names the dialog, so assistive technology can tell what it is for', () => {
     expect(dialog()?.getAttribute('aria-label')).toBe('保護者の方へ');
+  });
+
+  it('takes the ? button out of the tab order while open, and puts it back when closed', () => {
+    button()?.click();
+    expect(button()?.hasAttribute('inert')).toBe(true);
+    close()?.click();
+    expect(button()?.hasAttribute('inert')).toBe(false);
+  });
+
+  it('keeps Tab and Shift+Tab on the close button while open', () => {
+    button()?.click();
+    for (const shiftKey of [false, true]) {
+      const e = new KeyboardEvent('keydown', { key: 'Tab', shiftKey, cancelable: true });
+      document.dispatchEvent(e);
+      expect(e.defaultPrevented).toBe(true);
+      expect(document.activeElement).toBe(close());
+    }
+  });
+
+  it('leaves Tab alone when closed', () => {
+    const e = new KeyboardEvent('keydown', { key: 'Tab', cancelable: true });
+    document.dispatchEvent(e);
+    expect(e.defaultPrevented).toBe(false);
   });
 });
