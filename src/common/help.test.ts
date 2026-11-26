@@ -8,6 +8,7 @@ describe('createHelp', () => {
   const close = () => help.querySelector<HTMLButtonElement>('.help-close');
 
   beforeEach(() => {
+    document.body.replaceChildren();
     help = createHelp();
     document.body.append(help);
   });
@@ -43,5 +44,20 @@ describe('createHelp', () => {
     });
     button()?.dispatchEvent(new Event('pointerdown', { bubbles: true }));
     expect(reached).toBe(false);
+  });
+
+  it('makes the screen behind it unreachable by Tab while open, and brings it back when closed', () => {
+    const behind = document.createElement('button');
+    document.body.append(behind);
+    button()?.click();
+    expect(behind.hasAttribute('inert')).toBe(true);
+    expect(help.hasAttribute('inert')).toBe(false); // 説明の中は、Tab で動ける
+    close()?.click();
+    expect(behind.hasAttribute('inert')).toBe(false);
+  });
+
+  it('puts the focus on the close button when opened', () => {
+    button()?.click();
+    expect(document.activeElement).toBe(close());
   });
 });

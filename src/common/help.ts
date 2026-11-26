@@ -42,13 +42,19 @@ export function createHelp(): HTMLElement {
   const onKey = (e: KeyboardEvent) => {
     if (e.key === 'Escape') close();
   };
+  // 説明を開いている間、後ろの画面は Tab で動けず、Enter も効かないようにする（後ろの絵の声が鳴らないように）
+  let behind: Element[] = [];
   function close() {
     dialog.hidden = true;
+    for (const el of behind) el.removeAttribute('inert');
+    behind = [];
     document.removeEventListener('keydown', onKey);
     open.focus();
   }
   open.addEventListener('click', () => {
     dialog.hidden = false;
+    behind = [...(wrap.parentElement?.children ?? [])].filter((el) => el !== wrap);
+    for (const el of behind) el.setAttribute('inert', '');
     document.addEventListener('keydown', onKey);
     closeButton.focus();
   });
