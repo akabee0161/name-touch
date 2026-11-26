@@ -60,4 +60,8 @@ describe('createHelp', () => {
     button()?.click();
     expect(document.activeElement).toBe(close());
   });
+
+  it('names the dialog, so assistive technology can tell what it is for', () => {
+    expect(dialog()?.getAttribute('aria-label')).toBe('保護者の方へ');
+  });
 });

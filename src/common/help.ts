@@ -23,6 +23,7 @@ export function createHelp(): HTMLElement {
   dialog.className = 'help-dialog';
   dialog.setAttribute('role', 'dialog');
   dialog.setAttribute('aria-modal', 'true');
+  dialog.setAttribute('aria-label', '保護者の方へ');
   dialog.hidden = true;
 
   const panel = document.createElement('div');
