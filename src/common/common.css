@@ -98,6 +98,13 @@ body {
   }
 }
 
+/* 画面の並び（grid）の 1 マスを取らないように外す。中の ？ と説明は、それぞれ自分で位置を決める */
+.help {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
 /* 保護者向けの「？」。右上に小さく置き、押すと説明が出る */
 .help-button {
   position: absolute;
