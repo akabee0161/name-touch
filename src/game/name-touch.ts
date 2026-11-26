@@ -1,5 +1,6 @@
 import type { ItemsFile } from '../common/assets';
 import type { AudioPlayer } from '../common/audio';
+import { createHelp } from '../common/help';
 import { attachLongPress } from '../common/long-press';
 import { buildPages } from './pages';
 
@@ -76,6 +77,9 @@ export function startNameTouch(root: HTMLElement, deps: NameTouchDeps): void {
     onExit();
   });
 
+  // ？もページを描き直しても同じものを使い、開いている説明が消えないようにする
+  const help = createHelp();
+
   function render() {
     clearBounceTimers();
     const page = pages[pageIndex];
@@ -117,7 +121,7 @@ export function startNameTouch(root: HTMLElement, deps: NameTouchDeps): void {
       grid.append(button);
     }
 
-    screen.append(exit);
+    screen.append(exit, help);
     if (pageIndex > 0) {
       const back = pictureButton('arrow arrow-left', '◀', 'まえ');
       back.addEventListener('click', () => goTo(pageIndex - 1));

@@ -162,36 +162,14 @@ describe('audio session (iOS silent switch)', () => {
   const nav = navigator as unknown as { audioSession?: { type: string } };
 
   afterEach(() => {
-    delete nav.audioSession;
+    nav.audioSession = undefined;
   });
 
-  it('sets the session to playback inside unlock, so the silent switch does not mute the voice', () => {
+  it('leaves the session as it is, so the silent switch mutes the voice as the user chose', () => {
     nav.audioSession = { type: 'auto' };
     const { audio } = makeAudio();
     void audio.unlock();
-    // await の前（タッチの処理の中）で済んでいる
-    expect(nav.audioSession.type).toBe('playback');
-  });
-
-  it('does nothing on a browser that has no audioSession', async () => {
-    const { audio, context } = makeAudio();
-    await expect(audio.unlock()).resolves.toBeUndefined();
-    expect(context.resume).toHaveBeenCalledTimes(1);
-  });
-
-  it('still unlocks when setting the session throws', async () => {
-    Object.defineProperty(navigator, 'audioSession', {
-      configurable: true,
-      value: {
-        set type(_v: string) {
-          throw new Error('not allowed');
-        },
-      },
-    });
-    const { audio, context } = makeAudio();
-    await expect(audio.unlock()).resolves.toBeUndefined();
-    expect(context.resume).toHaveBeenCalledTimes(1);
-    expect(context.sources[0]?.start).toHaveBeenCalledTimes(1);
+    expect(nav.audioSession.type).toBe('auto');
   });
 });
 
