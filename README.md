@@ -7,7 +7,7 @@
 ## 作り方
 
 - Vite + TypeScript + Vitest + Biome。`base` は `/play/name-touch/`、ビルドの出力は `out/play/name-touch/`
-- `src/common/`: 知育ゲーム 9 本で共通の部分（素材の一覧・音・長押し・タイトル画面）。あとで ankardo のひな形に切り出す
+- `src/common/`: 知育ゲーム 9 本で共通の部分（素材の一覧・音・長押し・タイトル画面）。ankardo の `templates/chiiku-game/` に切り出した（共通の直しはひな形が正）
 - `src/game/`: なまえタッチの遊び
 - `public/chiiku/`: 共通素材（絵・声・一覧・クレジット。鳴き声は入れない）。ankardo の `shared-assets/chiiku/` のコピーで、手で直さない。コピーし直すには ankardo のフォルダで `./scripts/copy-assets.sh chiiku <このリポジトリのパス> --no-cry`（鳴き声 `cry/` は、このゲームが鳴らさない CC BY-SA の録音を配らないため入れない）。コピー元は `chiiku-assets.md`
 
